@@ -1,0 +1,106 @@
+CREATE TABLE Codigo_Postal (
+  codPostal varchar(15) DEFAULT NULL,
+  localidade varchar(60) DEFAULT NULL,
+  PRIMARY KEY (codPostal)
+) 
+
+CREATE TABLE Cargo (
+  codCargo number(11) NOT NULL,
+  tipo varchar(50) NOT NULL,
+  PRIMARY KEY (codCargo)
+) 
+
+CREATE TABLE Categorias (
+  categoria_Produto varchar(50) NOT NULL,
+  descricao varchar2(100) NOT NULL,
+  PRIMARY KEY (categoria_Produto)
+) 
+
+CREATE TABLE Fornecedores (
+  num_Fornecedor number(11) NOT NULL,
+  Nome varchar2(50) NOT NULL,
+  primeiro_Nome varchar2(10 CHAR) NOT NULL,
+  ultimo_Nome varchar2(10 CHAR) NOT NULL,
+  num_Telefone varchar2(20 CHAR) NOT NULL,
+  rua varchar2(50 CHAR) NOT NULL,
+  nPorta varchar2(50 CHAR) DEFAULT NULL,
+  codPostal varchar2(15 CHAR) NOT NULL,
+  PRIMARY KEY (num_Fornecedor),
+  CONSTRAINT codPostal_ibfk_1 FOREIGN KEY (codPostal) REFERENCES CODIGO_POSTAL (codPostal)
+) 
+
+CREATE TABLE clientes (
+  num_Cliente number(11) NOT NULL,
+  nome varchar2(50) NOT NULL,
+  primeiro_Nome varchar2(10) NOT NULL,
+  ultimo_Nome varchar2(10) NOT NULL,
+  num_Telefone varchar2(50) NOT NULL,
+  rua varchar2(50) NOT NULL,
+  nPorta varchar2(50) DEFAULT NULL,
+  codPostal varchar2(15) DEFAULT NULL,
+  PRIMARY KEY (num_Cliente),
+  CONSTRAINT codPostal_ibfk_2 FOREIGN KEY (codPostal) REFERENCES CODIGO_POSTAL (codPostal)
+) 
+
+CREATE TABLE Funcionarios (
+  id_Funcionario number(11) NOT NULL,
+  primeiro_Nome varchar2(50) NOT NULL,
+  ultimo_Nome varchar2(50) NOT NULL,
+  email varchar2(50) NOT NULL,
+  num_Telefone varchar2(50) NOT NULL,
+  codCargo number(11) NOT NULL,
+  PRIMARY KEY (id_Funcionario),
+  CONSTRAINT cargo_ibfk_1 FOREIGN KEY (codCargo) REFERENCES CARGO (codCargo)
+) 
+
+CREATE TABLE Encomendas_Cliente (
+  num_Encomenda number(11) NOT NULL,
+  data_Encomenda date NOT NULL,
+  data_Envio date NOT NULL,
+  data_Chegada date DEFAULT NULL,
+  estado_Encomenda varchar2(15) NOT NULL,
+  total_Encomenda number(11) NOT NULL,
+  id_Funcionario number(11) NOT NULL,
+  num_Cliente number(11) NOT NULL,
+  num_Pagamento number(11) NOT NULL,
+  PRIMARY KEY (num_Encomenda),
+  CONSTRAINT funcionarios_ibfk_3 FOREIGN KEY (id_Funcionario) REFERENCES Funcionarios (id_Funcionario),
+  CONSTRAINT clientes_ibfk_3 FOREIGN KEY (num_Cliente) REFERENCES clientes (num_Cliente),
+  CONSTRAINT pagamento_ibfk_3 FOREIGN KEY (num_pagamento) REFERENCES PAGAMENTOS (num_Pagamento)
+)
+
+CREATE TABLE produtos (
+  cod_Produto varchar2(15) NOT NULL,
+  nome_Produto varchar2(50) NOT NULL,
+  descricao varchar2(70) NOT NULL,
+  qtd_Stock number(38) NOT NULL,
+  data_Validade date NOT NULL,
+  preco_Compra decimal(10,2) NOT NULL,
+  preco_Venda decimal(10,2) NOT NULL,
+  estado_Produto varchar2(15) NOT NULL,
+  categoria_Produto varchar2(50) NOT NULL,
+  num_Fornecedor number(11) NOT NULL,
+  PRIMARY KEY (cod_Produto),
+  CONSTRAINT categorias_ibfk_1 FOREIGN KEY (categoria_Produto) REFERENCES categorias (categoria_Produto),
+  CONSTRAINT fornecedores_ibfk_2 FOREIGN KEY (num_Fornecedor) REFERENCES fornecedores (num_Fornecedor)
+) 
+
+CREATE TABLE pagamentos (
+  num_Pagamento number(11) NOT NULL,
+  data_Pagamento date NOT NULL,
+  total decimal(10,2) NOT NULL,
+  num_cliente number(11) NOT NULL,
+  PRIMARY KEY (num_Pagamento),
+  CONSTRAINT pagamentos_ibfk_1 FOREIGN KEY (num_Cliente) REFERENCES clientes (num_Cliente)
+) 
+
+CREATE TABLE Detalhes_Encomenda (
+  num_Encomenda number(11) NOT NULL,
+  cod_Produto varchar(15) NOT NULL,
+  num_linha_encomenda number(6) NOT NULL,
+  qtd_Produtos number(11) NOT NULL,
+  preco_Unitario decimal(10,2) NOT NULL,
+  PRIMARY KEY (num_Encomenda,cod_Produto),
+  CONSTRAINT detalhes_ibfk_1 FOREIGN KEY (num_Encomenda) REFERENCES encomendas_cliente (num_Encomenda),
+  CONSTRAINT detalhes_ibfk_2 FOREIGN KEY (cod_Produto) REFERENCES produtos (cod_Produto)
+) 
